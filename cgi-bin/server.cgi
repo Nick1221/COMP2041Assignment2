@@ -12,13 +12,11 @@ cat <<eof
 
 </head>
 <body>
-
 This web server is running on at IP address: <b>$host_address</b>
 <p>
 This web server is running on hostname: <b>$SERVER_NAME</b>
 <p>
 This web server is <b>$SERVER_SOFTWARE</b>
-
 </body>
 </html>
 eof
