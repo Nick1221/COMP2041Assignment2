@@ -4,12 +4,12 @@ echo
 
 host_address=`host $REMOTE_ADDR 2>&1|grep Name|sed 's/.*: *//'`
 host_name=`hostname`
+
 cat <<eof
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <title>IBrowser IP, Host and User Agent</title>
-
 </head>
 <body>
 Your browser is running at IP address: <b>$REMOTE_ADDR</b>
