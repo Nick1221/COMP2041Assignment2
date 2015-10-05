@@ -4,7 +4,7 @@ echo
 
 #host_address=$REMOTE_ADDR;
 #`host  2>&1|grep Name|sed 's/.*: *//'`
-host_name=`host $REMOTE_ADDR|sed 's/Host //'`
+host_name=`host $REMOTE_ADDR|sed 's/.* domain name pointer //'`
 
 cat <<eof
 <!DOCTYPE html>
