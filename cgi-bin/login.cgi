@@ -6,27 +6,30 @@ use CGI::Carp qw/fatalsToBrowser warningsToBrowser/;
 print header, start_html('Login');
 warningsToBrowser(1);
 
-if (length url_param('username') != 0){
-	$username = url_param('username');
-} else {
-	$username = '';
-}
-if (length url_param('password') != 0){
-	$password = url_param('password');
-} else {
-	$password = '';
+$username = param('username') || '';
+$password = param('password') || '';
+$usr = length($username);
+$pwd = length($password);
+$files = <*/name>;
+open(INFILE, '<','http://cgi.cse.unsw.edu.au/~cs2041cgi/15s2/lab/cgi/authenticate/accounts/') or die;
+while (<INFILE>)
+{
+  chomp;
+  print "$_\n";
 }
 
-if ($username && $password) {
+foreach $file (@files) {
+	print "$file\n";
+}
+if ($usr != 0 && $pwd != 0) {
 	print "$username authenticated.\n";
-	print "$password\n";
-} elsif ($password && !$username){
+} elsif ($pwd != 0 && $usr == 0){
 	print start_form, "\n";	
 	print "Username:\n", textfield('username'), "\n";
 	print hidden('password',$password);
 	print submit(value => Login), "\n";
 	print end_form, "\n";
-} elsif ($username && !$password){
+} elsif ($usr != 0 && $pwd == 0){
 	print start_form, "\n";
 	print hidden('username',$username);
 	print "Password:\n", textfield('password'), "\n";
@@ -39,6 +42,9 @@ if ($username && $password) {
 	print submit(value => Login), "\n";
 	print end_form, "\n";
 }
+
 print end_html;
+
+
 exit(0);
 

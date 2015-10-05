@@ -2,8 +2,8 @@
 echo Content-type: text/html
 echo
 
-host_address=`host $REMOTE_ADDR 2>&1|grep Name|sed 's/.*: *//'`
-
+host_address=`host $REMOTE_ADDR|sed 's/Host //'`
+# 2>&1|grep Name|sed 's/.*: *//'
 cat <<eof
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +11,7 @@ cat <<eof
 <title>Webserver IP, Host and Software</title>
 </head>
 <body>
-This web server is running on at IP address: <b>$SERVER_ADDR</b>
+This web server is running on at IP address: <b>$host_address</b>
 <p>
 This web server is running on hostname: <b>$SERVER_NAME</b>
 <p>

@@ -2,8 +2,9 @@
 echo Content-type: text/html
 echo
 
-host_address=`host $REMOTE_ADDR 2>&1|grep Name|sed 's/.*: *//'`
-host_name=`hostname`
+#host_address=$REMOTE_ADDR;
+#`host  2>&1|grep Name|sed 's/.*: *//'`
+host_name=`host $REMOTE_ADDR|sed 's/Host //'`
 
 cat <<eof
 <!DOCTYPE html>
