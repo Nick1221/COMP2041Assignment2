@@ -10,19 +10,30 @@ $username = param('username') || '';
 $password = param('password') || '';
 $usr = length($username);
 $pwd = length($password);
-$files = <*/name>;
-open(INFILE, '<','http://cgi.cse.unsw.edu.au/~cs2041cgi/15s2/lab/cgi/authenticate/accounts/') or die;
-while (<INFILE>)
-{
-  chomp;
-  print "$_\n";
+
+
+my $path = "../accounts/";
+opendir( my $DIR, $path);
+while ( my $entry = readdir $DIR){
+    next unless -d $path . '/' . $entry;
+    next if $entry eq '.' or $entry eq '..';
+    push (@usernames, $entry);
+    my $pwpath = $path.$entry;
+    opendir( my $PWDIR, $pwpath);
+    open 'pw', '<', "$pwpath/password" or die $!;
+    my @pword = <pw>;
+    #print "$pword[0]";
+    push (@passwords, $pword[0]);
 }
 
-foreach $file (@files) {
-	print "$file\n";
-}
 if ($usr != 0 && $pwd != 0) {
-	print "$username authenticated.\n";
+    if ( grep( /^$username$/, @usernames ) && grep (/^$password$/, @passwords) ){
+        print "$username authenticated.\n";
+    } elsif ( grep( /^$username$/, @usernames ) && !grep( /^$password$/, @password )){
+        print "Incorrect password!\n";
+    } elsif ( !grep( /^$username$/, @usernames )){
+        print "Unknown username!\n";
+    }
 } elsif ($pwd != 0 && $usr == 0){
 	print start_form, "\n";	
 	print "Username:\n", textfield('username'), "\n";
