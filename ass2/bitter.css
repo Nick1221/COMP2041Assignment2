@@ -18,12 +18,15 @@
 }
 
 .bitter_user_details {
-    background-color: #ABCDEF;
+	body {
+	  background: linear-gradient(black, white);
+	}
+    /*background-color: #ABCDEF;
     color: #204142;
     white-space: pre;
     border:thin solid #204142;
     border-radius: 1em;
-    padding-left: 0.42em;
+    padding-left: 0.42em;*/
 }
 
 .bitter_button {
@@ -32,3 +35,6 @@
     border-radius: 0.42em;
     color: #904142;
 }
+
+
+
