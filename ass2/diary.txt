@@ -1,1 +1,4 @@
 Date	  Start    Stop	   Activity	Comments 
+12/10	  14:59	   20:53   Coding	Tried getting a main page linked to user detail 					working. No luck yet
+15/10	  1:00	   2:00	   Coding	Worked on user page, got image to display, added 						slight formatting to user details. Created a 						return button and a users button.
+
