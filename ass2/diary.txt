@@ -1,4 +1,5 @@
 Date	  Start    Stop	   Activity	Comments 
 12/10	  14:59	   20:53   Coding	Tried getting a main page linked to user detail 					working. No luck yet
 15/10	  1:00	   2:00	   Coding	Worked on user page, got image to display, added 						slight formatting to user details. Created a 						return button and a users button.
-
+16/10     11:53    2:23    Coding	Wroking on the user page, still can't figure out 						a good way to display bleats, worked with the 						css a little, not much progress
+17/10 	  9:10	   0:23    Coding	Got a decent looking user page going on, got 						bleats working and displaying in the right 						order. Have to look into getting some formatting 						done on the bleats. Will start on login/logout 						asap. Forgot to commit yesterdays work rip.

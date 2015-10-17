@@ -8,6 +8,18 @@ use CGI qw/:all/;
 use CGI::Carp qw/fatalsToBrowser warningsToBrowser/;
 
 
+$dataset_size = "small"; 
+$users_dir = "dataset-$dataset_size/users";	
+#To load all the bleats at startup?
+$bleats_dir = "dataset-$dataset_size/bleats";
+@file_bleats = sort(glob("$bleats_dir/*"));
+foreach my $file (@file_bleats){
+	open my $p, "$file" or die "cannot open $file: $!";
+	$bleat = join("\n", <$p>);
+	push (@bleats, $bleat);
+	close $p;
+}
+
 
 main();
 sub main() {
@@ -20,8 +32,8 @@ sub main() {
 
     # define some global variables
     $debug = 1;
-    $dataset_size = "small"; 
-    $users_dir = "dataset-$dataset_size/users";
+    
+
 	if ($action eq '' || $action eq 'Return'){
 		print page_header();
 		#print "<p>$action</p>\n";
@@ -51,10 +63,22 @@ sub user_page {
 	my $image_filename = "$user_to_show/profile.jpg";
 	my @userdetails = do {
 		open my $p, "$details_filename" or die "can not open $details_filename: $!";
-		<$p>;
-	};
+		<$p>;		
+	};		
 	close $p;
-	print '<p>'."\n".'<img class="Profile Pic" src='."$image_filename".' alt="PH">'."\n".'</p>'."\n";
+	
+	print '<div class="container">';
+	print '<nav class="elem">';
+	
+
+	#Profile Image
+	print '<div class="profile_image">';
+	print '<img class="Profile Pic" src='."$image_filename".' alt="pictures/noimage.png">';	
+	print '</div>';
+
+
+	#Details
+	print '<div class="user_details">';
 	@userdetails = sort(@userdetails);
 	foreach my $user (@userdetails){
 		if ($user =~ m/email: |password:/){
@@ -76,24 +100,54 @@ sub user_page {
 			$user = "Listens: ".join("\n", @listensto);
 		} elsif ($user =~ m/username/){
 			$user =~ s/username/Username/;
+			$username = $user;
+			$username =~ s/Username: //;
+			$username =~ s/^\s+|\s+$//g;
 		}
-		print "<p>\n$user\n<\p>\n";
-		
+		print "<p>$user<\p>\n";
 	}
 	my $next_user = $n + 1;
-	return <<eof
+	print '</div>';
+    print '</nav>';
+
+
+	#Bleats
+	print '<section class="elem">';
+	#print "$username\n";
+
+	print '<span class="first">';
+	print '@'."$username";
+	print '</span>';
+	#
+	print "@reg_users\n";
+	my @userbleats = grep { /$username/ } @bleats;
+	@userbleats = reverse @userbleats;
+	foreach $ele (@userbleats){
+		print '<div class="bubble-container">';
+		print '<div class="bubble">';
+		my @bl = split"\n", $ele;
+		@bl = sort(@bl);
+		foreach my $line (@bl){
+			print "<p>$line</p>";
+		}
+		print '</div>';
+		print '</div>';
+	}
+
+  	print '</section>';
 
 	
-	<div class="bitter_user_details">
-	$details
-	</div>
-	<p>
+	return <<eof
 	
+	</div>
+	<footer class="elem">
+	<p>
 	<form method="POST" action="">
 		<input type="hidden" name="n" value="$next_user">
 		<input type="submit" name="act" value="Next User" class="bitter_button">
-		<input type="submit" name="act" value="Return" class="bitter_button">
+		<input type="submit" name="act" value="Return" class="bitter_button" align="right">
 	</form>
+	</footer>
 eof
 }
 
@@ -107,11 +161,11 @@ Content-Type: text/html
 <html lang="en">
 <head>
 <title>Bitter</title>
-<link href="bitter.css" rel="stylesheet">
+<link href="css/bitter.css" rel="stylesheet">
 </head>
 <body>
 <div class="bitter_heading">
-Bitter
+<img src="pictures/Title.png" width="212" height="59" alt="Bitter">
 </div>
 eof
 }
@@ -124,12 +178,13 @@ Content-Type: text/html
 <html lang="en">
 <head>
 <title>Bitter</title>
-<link href="bitter.css" rel="stylesheet">
+<link href="css/bitter.css" rel="stylesheet">
 </head>
 <body>
 <div class="bitter_heading">
-Bitter Profile Page
+<img src="pictures/Title.png" width="212" height="59" alt="Bitter">
 </div>
+<div id="container">
 eof
 }
 
