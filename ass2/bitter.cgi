@@ -52,15 +52,18 @@ sub main() {
 		print start_form, "\n";
 		print submit("act",'Users'),"\n";
 		print end_form, "\n";
+		print page_trailer();
 	} elsif ($action =~ m/^Next User$|^Users$/ && $authenticated == 1) {
 		#Logged in User page
-		print user_page();     		
+		print user_page(); 
+		print page_trailer();    		
 	} else {
 		#Logged out/Haven't logged in page
 		print page_header();
 		print unauth_page();
+		print page_trailer();
 	}
-	print page_trailer();
+
     
 
 }
@@ -196,22 +199,25 @@ sub unauth_page {
 	#To have login, a brief intro to bitter. Done tonight
 	
 	return <<eof
-	
 	<div class="cool_btn1 teal">
-		<h1 class="top">10k</h1>
-		<h2>U</h2>
+		<h1 class="top">Register</h1>
 	</div>
-	<p>
+	<div class="cool_btn2 teal">
+		<h1 class="top">Login</h1>
+	</div>
 	<form method="POST" action="">
-		<input type="submit" name="act" value="Register" class="bitter_button">
+		<input type="submit" name="act" value="Users" class="bitter_button">
+		<input type="submit" name="act" value="Register" class="bitter_button" 	align="right">
 		<input type="submit" name="act" value="Login" class="bitter_button" align="right">
 	</form>
 eof
 }
 
+sub login_page {
+}
 
-
-
+sub registration_page {
+}
 
 sub page_header {
     return <<eof
