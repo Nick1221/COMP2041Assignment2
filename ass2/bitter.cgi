@@ -6,10 +6,21 @@
 
 use CGI qw/:all/;
 use CGI::Carp qw/fatalsToBrowser warningsToBrowser/;
-
+use CGI::Cookie;
 
 $dataset_size = "small"; 
 $users_dir = "dataset-$dataset_size/users";	
+@file_user = sort(glob("$users_dir/*"));
+foreach my $file (@file_user){
+	open my $p, "$file" or die "cannot open $file: $!";
+	foreach my $line (<$p>){
+		if ($line =~ m/username: |password: /){
+			$line =~ s/.+\: //;
+
+		}
+	}
+	close $p;
+}
 #To load all the bleats at startup?
 $bleats_dir = "dataset-$dataset_size/bleats";
 @file_bleats = sort(glob("$bleats_dir/*"));
@@ -33,15 +44,21 @@ sub main() {
     # define some global variables
     $debug = 1;
     
-
-	if ($action eq '' || $action eq 'Return'){
+	$authenticated = 0;
+	if ($action =~ m/^Return$|^$/ && $authenticated >= 1){
+		#Logged in front page
 		print page_header();
 		#print "<p>$action</p>\n";
 		print start_form, "\n";
 		print submit("act",'Users'),"\n";
 		print end_form, "\n";
-	} else {
+	} elsif ($action =~ m/^Next User$|^Users$/ && $authenticated == 1) {
+		#Logged in User page
 		print user_page();     		
+	} else {
+		#Logged out/Haven't logged in page
+		print page_header();
+		print unauth_page();
 	}
 	print page_trailer();
     
@@ -119,17 +136,40 @@ sub user_page {
 	print '@'."$username";
 	print '</span>';
 	#
-	print "@reg_users\n";
+	#print "@reg_users\n";
 	my @userbleats = grep { /$username/ } @bleats;
 	@userbleats = reverse @userbleats;
 	foreach $ele (@userbleats){
+		#print '<div class="avatar">';
+		#print '<img src='."$image_filename".'>';
+	#	print '<div class="hover">';
 		print '<div class="bubble-container">';
 		print '<div class="bubble">';
 		my @bl = split"\n", $ele;
 		@bl = sort(@bl);
 		foreach my $line (@bl){
-			print "<p>$line</p>";
+			if ($line =~ m/^bleat: /){
+				my $println = $line;
+				$println =~ s/bleat: //;
+				print "<p>$println</p>\n";
+			} elsif ($line =~ m/time: /){
+				$println = $line;
+				$println =~ s/time: //;
+				print '<div class="bubble-subscript">';
+				print "<p>Sent at $println</p>\n";
+				print '</div>';
+			} elsif ($line =~ m/in\_reply\_to:/){
+				my $println = $line;
+				$println =~ s/in_reply_to: //;
+				print '<div class="bubble-superscript">';
+				print "<p>In reply to $println</p>\n";
+				print '</div>';
+			} else {
+				next;
+			}
 		}
+		#print '</div>';
+	#	print '</div>';
 		print '</div>';
 		print '</div>';
 	}
@@ -150,6 +190,26 @@ sub user_page {
 	</footer>
 eof
 }
+
+
+sub unauth_page {
+	#To have login, a brief intro to bitter. Done tonight
+	
+	return <<eof
+	
+	<div class="cool_btn1 teal">
+		<h1 class="top">10k</h1>
+		<h2>U</h2>
+	</div>
+	<p>
+	<form method="POST" action="">
+		<input type="submit" name="act" value="Register" class="bitter_button">
+		<input type="submit" name="act" value="Login" class="bitter_button" align="right">
+	</form>
+eof
+}
+
+
 
 
 
