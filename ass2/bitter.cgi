@@ -8,20 +8,7 @@ use CGI qw/:all/;
 use CGI::Carp qw/fatalsToBrowser warningsToBrowser/;
 
 
-$dataset_size = "medium"; 
 
-#To load all the bleats at startup?
-$bleats_dir = "dataset-$dataset_size/bleats";
-@file_bleats = sort(glob("$bleats_dir/*"));
-$users_dir = "dataset-$dataset_size/users";	
-print "$users_dir\n";
-@file_user = sort(glob("$users_dir/*"));
-foreach my $file (@file_bleats){
-	open my $p, "$file" or die "cannot open $file: $!";
-	$bleat = join("\n", <$p>);
-	push (@bleats, $bleat);
-	close $p;
-}
 
 
 main();
@@ -31,12 +18,25 @@ sub main() {
 	$password = param('Password') || '';
     # print start of HTML ASAP to assist debugging if there is an error in the script
     # Now tell CGI::Carp to embed any warning in HTML
-
+	
     warningsToBrowser(1);
-
+	
     # define some global variables
     $debug = 1;
-    
+    $dataset_size = "medium"; 
+
+	#To load all the bleats at startup?
+	$bleats_dir = "dataset-$dataset_size/bleats";
+	@file_bleats = sort(glob("$bleats_dir/*"));
+	$users_dir = "dataset-$dataset_size/users";	
+	print "$users_dir\n";
+	@file_user = sort(glob("$users_dir/*"));
+	foreach my $file (@file_bleats){
+		open my $p, "$file" or die "cannot open $file: $!";
+		$bleat = join("\n", <$p>);
+		push (@bleats, $bleat);
+		close $p;
+	}
 
 	if ($action =~ m/^Logout$|^$/){
 		print page_header();
