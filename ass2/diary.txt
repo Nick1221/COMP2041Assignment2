@@ -1,6 +1,9 @@
 Date	  Start    Stop	   Activity	Comments 
-12/10	  14:59	   20:53   Coding	Tried getting a main page linked to user detail 					working. No luck yet
-15/10	  1:00	   2:00	   Coding	Worked on user page, got image to display, added 						slight formatting to user details. Created a 						return button and a users button.
-16/10     11:53    2:23    Coding	Wroking on the user page, still can't figure out 						a good way to display bleats, worked with the 						css a little, not much progress
-17/10 	  9:10	   0:23    Coding	Got a decent looking user page going on, got 						bleats working and displaying in the right 						order. Have to look into getting some formatting 						done on the bleats. Will start on login/logout 						asap. Forgot to commit yesterdays work rip.
-18/10     10:00	   2:22	   Coding	User page mostly complete, working on main 						portal page, need to start work on personal 						profile page, login and logout forms, and 						sorting authentication. Sending bleats and such 					will happen later.
+12/10	  14:59	   20:53   Coding	Tried getting a main page linked to user detail 									working. No luck yet
+15/10	  1:00	   2:00	   Coding	Worked on user page, got image to display, added 										slight formatting to user details. Created a 										return button and a users button.
+16/10     11:53    2:23    Coding	Wroking on the user page, still can't figure out 										a good way to display bleats, worked with the 										css a little, not much progress
+17/10 	  9:10	   0:23    Coding	Got a decent looking user page going on, got 										bleats working and displaying in the right 										order. Have to look into getting some formatting 										done on the bleats. Will start on login/logout 										asap. Forgot to commit yesterdays work rip.
+18/10     10:00	   2:22	   Coding	User page mostly complete, working on main 										portal page, need to start work on personal 									profile page, login and logout forms, and 										sorting authentication. Sending bleats and such 									will happen later.
+19/10     9:00	   11:00   Coding   Mostly just did css stuff, looked around for good 										css designs and added in placeholder code.
+20/10	  8:45	   1:09    Coding   Login should be ok for now, working on registration 									page, search page and improvements on currently 									done tasks. Will be picking up speed on these 										things tomorrow.
+

@@ -1,0 +1,248 @@
+/*
+ * written by andrewt@cse.unsw.edu.au September 2015
+ * as a starting point for COMP2041/9041 assignment 2
+ * http://cgi.cse.unsw.edu.au/~cs2041/assignments/bitter/
+ *
+ * Change (or replace) the CSS below to create you own look-and-feel
+ *
+ * You will probably want to add  CSS to this file too
+ */
+
+.bitter_heading {
+    background-color:#FFCCCC;
+    color:white;
+    text-align:center;
+    padding:5px;
+}
+
+.profile_image {
+	max-width: 250px;
+	max-height: 250px;
+    border: 25px solid gray;
+}
+.user_details {
+    background-color: #00FFFF;
+    color: #204142;
+    border:thin solid #204142;
+    border-radius: 1em;
+    padding-left: 0.42em;
+    max-width: 300px;
+}
+
+
+.bitter_button {
+    background-color: #FEDBCA;
+    border:thin solid #904142;
+    border-radius: 0.42em;
+    color: #904142;
+}
+
+.container {
+    position: relative;
+}
+nav.elem {
+    position: absolute;
+    left: 0px;
+    width: 300px;
+}
+section {
+    /* position is static by default */
+	background-color:#FFCCCC;
+	border-style: solid;    
+    margin-left: 300px;
+}
+footer.elem {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 90px;
+    background-color: white;
+    width: 100%;
+    margin: 0;
+    z-index: 1;
+}
+body {
+    margin-bottom: 120px;
+}
+
+
+
+/* experimental Source: http://www.sanwebe.com/2013/01/40-css-buttons-from-codepen */
+.bubble {
+  	width: 100%;
+	padding: .5em 1em;
+  	line-height: 1.4em;
+  	padding: 20px;
+  	background-color: #ecf0f1;
+  	position: relative;
+	border: thin solid #000000;
+  	border-radius: 8px;
+  	text-align: left;
+  	display: inline-block; 
+}
+.bubble:hover > .over-bubble {
+   	opacity: 1; }
+.bubble:hover > .over-bubble {
+   	opacity: 1; 
+}
+
+.bubble-subscript {
+	position:absolute;
+    bottom:0;
+    right:0;
+	padding-right: 5px;
+	font-size: x-small;
+	color: #707070;
+}
+
+.bubble-superscript {
+	position:absolute;
+    top:0;
+    left:0;
+	padding-left: 5px;
+	font-size: x-small;
+	color: #707070;
+}
+.bubble-container {
+  	width: 75%;
+  	display: block;
+ 	position: relative;	
+ 	padding-left: 20px;
+  	vertical-align: top;
+  	display: inline-block; 
+	margin: auto;
+}
+
+.hover {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: #3498db;
+	top: 0;
+	font-size: 1.8em;
+	border: 5px solid #5cc0ff;
+	border-radius: 50%;
+	text-align: center;
+	color: white;
+	padding-top: 24%;
+	opacity: 0;
+	font-family: 'FontAwesome';
+	font-weight: 300;
+	transition-property: all;
+	transition-duration: 0.5s;
+	transition-timing-function: ease; 
+}
+
+
+.first {
+	width: 560px;
+	display: block;
+	margin-left: 97px;
+	background-color: #3498db;
+	text-shadow: #2084c7 1px 1px 0;
+	padding: 1em 0 !important;
+	color: white;
+	text-align: center;
+	margin-top: 1em;
+	font-family: "Lato";
+	font-size: 1.6em;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	position: relative; 
+}
+
+.search_box {
+	position:relative;
+    padding:6px 15px;
+    right: 0;
+    border:2px solid #207cca;
+	background-color:#207cca;
+    color:#fafafa;
+}
+
+.search_results {
+	position: relative;
+	background-color:#FFCCCC;
+	border-style: solid;    
+    margin-left: 100px;
+	margin-right: 100px;
+}
+
+/*http://www.sanwebe.com/2013/01/40-css-buttons-from-codepen SOurce*/
+.cool_btn1 {
+	width: 190px;
+	height: 190px;
+	margin-left: 415px;
+	margin-top: 500px;
+	position: relative;
+	border-radius: 200px;
+	float: left;
+	background-image: linear-gradient(#fafafa, #e3e3e3 50%, #888888 50%, #666666);
+	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3);
+	display: inline-block;
+}
+
+.cool_btn2 {
+	width: 190px;
+	height: 190px;
+	margin-left: 0px;
+	position: relative;
+	border-radius: 200px;
+	background-image: 
+	background-image: linear-gradient(#fafafa, #e3e3e3 50%, #888888 50%, #666666);
+	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3);
+	display: inline-block;
+}
+
+.cool_btn1 h1 {
+    text-align: center;
+    font-size: 20px;
+    margin: 20px 0px 0px;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    color: #333;
+    text-shadow: 0px 1px 0px #FFF, 0px -1px 0px rgba(0, 0, 0, 0.5);
+    font-family: "Lobster",cursive;
+    font-weight: normal;
+    line-height: 1;
+	
+}
+
+.cool_btn2 h1 {
+    text-align: center;
+    font-size: 20px;
+    margin: 20px 0px 0px;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    color: #333;
+    text-shadow: 0px 1px 0px #FFF, 0px -1px 0px rgba(0, 0, 0, 0.5);
+    font-family: "Lobster",cursive;
+    font-weight: normal;
+    line-height: 1;
+}
+
+.cool_btn1.teal {
+  	background-image: linear-gradient(#d5d5d5, #ffffff 50%, #11b8fe 50%, #0187b8);
+  	transition-property: all;
+  	transition-duration: 0.4s;
+  	cursor: pointer;
+}
+
+.cool_btn2.teal {
+   	background-image: linear-gradient(#d5d5d5, #ffffff 50%, #11b8fe 50%, #0187b8);
+ 	transition-property: all;
+  	transition-duration: 0.4s;
+  	cursor: pointer;
+}
+
+.cool_btn1.teal:hover {
+	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(16, 216, 252, 0.8);
+}
+
+.cool_btn2.teal:hover {
+	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), inset 0px 2px 5px rgba(0, 0, 0, 0.3), 0 0 28px 6px rgba(16, 216, 252, 0.8);
+}
