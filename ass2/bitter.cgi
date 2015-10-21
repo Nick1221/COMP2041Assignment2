@@ -38,7 +38,6 @@ sub main() {
 		print login_page();
 		print page_trailer();  
 	} elsif ($action =~ m/^SubmitLogin$/){
-		load_data();
 		if (length($username) > 0 && length($password) > 0){
 			my $search = $username;
 			$search =~ s/^\s+|\s+$//g;
@@ -224,7 +223,7 @@ eof
 
 sub unauth_page {
 	#To have login, a brief intro to bitter. Done tonight
-
+	load_data();
 	return <<eof
 
 	<form method="POST" action="">
