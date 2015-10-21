@@ -8,6 +8,7 @@ use CGI qw/:all/;
 use CGI::Carp qw/fatalsToBrowser warningsToBrowser/;
 
 main();
+
 sub main() {
 	$action = param('act') || '';
 	$username = param('Username') || '';
@@ -23,7 +24,6 @@ sub main() {
 
 	if ($action =~ m/^Logout$|^$/){
 		print page_header();
-		load_data();
 		print unauth_page();
 		print '<input type="hidden" name="Username" value="">';
 		print '<input type="hidden" name="Password" value="">';
@@ -469,6 +469,8 @@ eof
 }
 
 sub login_header {
+	
+	load_data();
     return <<eof
 Content-Type: text/html
 
