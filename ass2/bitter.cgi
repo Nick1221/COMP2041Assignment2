@@ -23,6 +23,7 @@ sub main() {
 
 	if ($action =~ m/^Logout$|^$/){
 		print page_header();
+		load_data();
 		print unauth_page();
 		print '<input type="hidden" name="Username" value="">';
 		print '<input type="hidden" name="Password" value="">';
@@ -223,7 +224,6 @@ eof
 
 sub unauth_page {
 	#To have login, a brief intro to bitter. Done tonight
-	load_data();
 	return <<eof
 
 	<form method="POST" action="">
