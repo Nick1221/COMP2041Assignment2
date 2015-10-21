@@ -8,9 +8,6 @@ use CGI qw/:all/;
 use CGI::Carp qw/fatalsToBrowser warningsToBrowser/;
 
 
-
-
-
 main();
 sub main() {
 	$action = param('act') || '';
@@ -441,10 +438,12 @@ sub search_page {
 }
 
 sub personal_page {
+	print 'sopmething';
 }
 
 sub page_header {
     return <<eof
+
 Content-Type: text/html
 
 <!DOCTYPE html>
@@ -462,6 +461,7 @@ eof
 
 sub userpage_header {
     return <<eof
+
 Content-Type: text/html
 
 <!DOCTYPE html>
@@ -487,6 +487,7 @@ eof
 
 sub login_header {
     return <<eof
+
 Content-Type: text/html
 
 <!DOCTYPE html>
