@@ -7,6 +7,8 @@
 use CGI qw/:all/;
 use CGI::Carp qw/fatalsToBrowser warningsToBrowser/;
 
+
+load_data();
 main();
 
 sub main() {
@@ -470,7 +472,6 @@ eof
 
 sub login_header {
 	
-	load_data();
     return <<eof
 Content-Type: text/html
 
@@ -500,6 +501,12 @@ sub page_trailer {
 }
 
 sub load_data {
+	print "Content-type: text/html";
+	print "<!DOCTYPE html>";
+	print '<html lang="en">';
+	print '<head>';
+	print '<title>Bitter</title>';
+	print '</head>';
 	$dataset_size = "medium"; 
 	#To load all the bleats at startup?
 	$bleats_dir = "dataset-$dataset_size/bleats";
@@ -513,6 +520,7 @@ sub load_data {
 		push (@bleats, $bleat);
 		close $p;
 	}
+	page_trailer();
 }
 
 sub bsearch {
