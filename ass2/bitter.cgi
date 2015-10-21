@@ -7,7 +7,6 @@
 use CGI qw/:all/;
 use CGI::Carp qw/fatalsToBrowser warningsToBrowser/;
 
-
 main();
 sub main() {
 	$action = param('act') || '';
@@ -20,20 +19,7 @@ sub main() {
 	
     # define some global variables
     $debug = 1;
-    $dataset_size = "medium"; 
-
-	#To load all the bleats at startup?
-	$bleats_dir = "dataset-$dataset_size/bleats";
-	@file_bleats = sort(glob("$bleats_dir/*"));
-	$users_dir = "dataset-$dataset_size/users";	
-	print "$users_dir\n";
-	@file_user = sort(glob("$users_dir/*"));
-	foreach my $file (@file_bleats){
-		open my $p, "$file" or die "cannot open $file: $!";
-		$bleat = join("\n", <$p>);
-		push (@bleats, $bleat);
-		close $p;
-	}
+    
 
 	if ($action =~ m/^Logout$|^$/){
 		print page_header();
@@ -52,6 +38,7 @@ sub main() {
 		print login_page();
 		print page_trailer();  
 	} elsif ($action =~ m/^SubmitLogin$/){
+		load_data();
 		if (length($username) > 0 && length($password) > 0){
 			my $search = $username;
 			$search =~ s/^\s+|\s+$//g;
@@ -101,7 +88,6 @@ sub main() {
 	}
 
     
-
 }
 
 
@@ -443,7 +429,6 @@ sub personal_page {
 
 sub page_header {
     return <<eof
-
 Content-Type: text/html
 
 <!DOCTYPE html>
@@ -461,7 +446,6 @@ eof
 
 sub userpage_header {
     return <<eof
-
 Content-Type: text/html
 
 <!DOCTYPE html>
@@ -487,7 +471,6 @@ eof
 
 sub login_header {
     return <<eof
-
 Content-Type: text/html
 
 <!DOCTYPE html>
@@ -515,7 +498,21 @@ sub page_trailer {
     return $html;
 }
 
-
+sub load_data {
+	$dataset_size = "medium"; 
+	#To load all the bleats at startup?
+	$bleats_dir = "dataset-$dataset_size/bleats";
+	@file_bleats = sort(glob("$bleats_dir/*"));
+	$users_dir = "dataset-$dataset_size/users";	
+	print "$users_dir\n";
+	@file_user = sort(glob("$users_dir/*"));
+	foreach my $file (@file_bleats){
+		open my $p, "$file" or die "cannot open $file: $!";
+		$bleat = join("\n", <$p>);
+		push (@bleats, $bleat);
+		close $p;
+	}
+}
 
 sub bsearch {
     my ($array, $word) = @_;
