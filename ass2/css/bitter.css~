@@ -67,7 +67,7 @@ body {
 
 
 
-/* experimental */
+/* experimental Source: http://www.sanwebe.com/2013/01/40-css-buttons-from-codepen */
 .bubble {
   	width: 100%;
 	padding: .5em 1em;
@@ -160,12 +160,32 @@ body {
     color:#fafafa;
 }
 
-.search_results {
+.results_container {
 	position: relative;
 	background-color:#FFCCCC;
 	border-style: solid;    
-    margin-left: 100px;
+    	margin-left: 100px;
 	margin-right: 100px;
+}
+
+.names-container {
+  	width: 20%;
+  	display: block;
+ 	position: relative;	
+ 	padding-left: 20px;
+  	vertical-align: top;
+  	display: inline-block; 
+	margin: auto;
+}
+
+.bleats-container {
+	width: 50%;
+	display: block;
+	position: relative;
+	padding-left: 300px;
+	vertical-align: top;
+  	display: inline-block; 
+	margin: auto;
 }
 
 /*http://www.sanwebe.com/2013/01/40-css-buttons-from-codepen SOurce*/

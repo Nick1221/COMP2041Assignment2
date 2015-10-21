@@ -267,6 +267,12 @@ sub inlogin_page {
 		<button type="submit" name="act" value="register">Register</button>
 		</div>
 	</form>
+	<footer class="elem">
+	<form method="POST" action="">
+		<input type="submit" name="act" value="Logout" class="bitter_button" align="right">
+	</form>
+	</footer>
+
 eof
 }
 
@@ -418,10 +424,69 @@ eof
 }
 
 sub search_page {
+	my $search_string = param('Searchstring') || '';
+	my @users = sort(glob("$users_dir/*"));
+	
+	foreach my $ele (@users){
+		#print "<p>$ele</p>\n";
+		my $tmpfile = $ele."/details.txt";
+		open my $p, "$tmpfile" or die "cannot open $file: $!";
+		foreach my $line (<$p>){
+			if ($line =~ m/full_name:/){
+				$line =~ s/full_name: //;
+				push (@fullnames, $line);
+			}
+		}
+		close $p;
+		$ele =~ s/.*users\///;
+	}
+	
+	print "<div class='results_container'>\n";
+	print "<h1>Search Results for $search_string</h1>\n";
+	print "<div class='names-container'>\n";
+	print '<div class="bubble">';
 
-	print '<div class="search_results">';
-	print 'blabh';
+	foreach my $name (@fullnames){
+		#print "<p>$name</p>";
+	}
+	my @full_search_index = grep { $fullnames[$_] =~ m/$search_string/i  } 0..$#fullnames;	
+	my @user_search_index = grep { $users[$_] =~ m/$search_string/i } 0..$#users;
+	my @full_name_search = grep { m/$search_string/i } @fullnames;
+	my @user_name_search = grep { m/$search_string/i } @users;
+	if ($#full_name_search >= 0){
+		print "<p>Names</p>";
+		foreach my $ele (@full_search_index){
+			#print "$ele - $fullnames[$ele]\n";
+			print '<form method="GET" action="">';
+			print '<input type="hidden" name="act" value="Users">';
+			print '<button type="submit" name="n" value='."$ele".'>'."$fullnames[$ele]"."</button>";
+			print '</form>';
+		}
+	} 
+	if ($#user_name_search >= 0){
+		print "<p>Usernames</p>";
+		foreach my $ele (@user_search_index){
+			print '<form method="GET" action="">';
+			print '<input type="hidden" name="act" value="Users">';
+			print '<button type="submit" name="n" value='."$ele".'>'."@users[$ele]"."</button>";
+			print '</form>';
+		}
+	}
 	print '</div>';
+	print '<div class="bleats-container">';
+	print 'asdg';
+	print '</div>';
+	print '</div>';
+	print '</div>';
+
+	return <<eof
+
+	<footer class="elem">
+	<form method="POST" action="">
+		<input type="submit" name="act" value="Logout" class="bitter_button" align="right">
+	</form>
+	</footer>
+eof
 }
 
 sub personal_page {
@@ -512,7 +577,6 @@ sub load_data {
 	$bleats_dir = "dataset-$dataset_size/bleats";
 	@file_bleats = sort(glob("$bleats_dir/*"));
 	$users_dir = "dataset-$dataset_size/users";	
-	print "$users_dir\n";
 	@file_user = sort(glob("$users_dir/*"));
 	foreach my $file (@file_bleats){
 		open my $p, "$file" or die "cannot open $file: $!";

@@ -6,4 +6,4 @@ Date	  Start    Stop	   Activity	Comments
 18/10     10:00	   2:22	   Coding	User page mostly complete, working on main 										portal page, need to start work on personal 									profile page, login and logout forms, and 										sorting authentication. Sending bleats and such 									will happen later.
 19/10     9:00	   11:00   Coding   Mostly just did css stuff, looked around for good 										css designs and added in placeholder code.
 20/10	  8:45	   1:09    Coding   Login should be ok for now, working on registration 									page, search page and improvements on currently 									done tasks. Will be picking up speed on these 										things tomorrow.
-
+21/10     5:22	   7:46	   Coding	Login done, search done.
