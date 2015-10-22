@@ -29,7 +29,6 @@
     max-width: 300px;
 }
 
-
 .bitter_button {
     background-color: #FEDBCA;
     border:thin solid #904142;
@@ -64,8 +63,6 @@ footer.elem {
 body {
     margin-bottom: 120px;
 }
-
-
 
 /* experimental Source: http://www.sanwebe.com/2013/01/40-css-buttons-from-codepen */
 .bubble {
@@ -113,6 +110,19 @@ body {
 	margin: auto;
 }
 
+
+.bleats-box {
+	font-size: 14px;
+	padding-left:0;
+	padding-top:0;
+	padding-bottom: 0.4em;
+	padding-right: 0.4em;
+	width: 400px;
+	height: 100px;
+	text-align: top;
+	resize: none;
+}
+
 .hover {
 	position: absolute;
 	width: 100%;
@@ -150,6 +160,8 @@ body {
 	border-top-right-radius: 8px;
 	position: relative; 
 }
+
+body {background-color:lightgray}
 
 .search_box {
 	position:relative;

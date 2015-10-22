@@ -44,7 +44,9 @@ sub main() {
 		if (length($username) > 0 && length($password) > 0){
 			my $search = $username;
 			$search =~ s/^\s+|\s+$//g;
-			my @usrexist = grep { /$search$/ } @file_user;			
+			my @usrexist = grep { /$search$/ } @file_user;	
+			my @usr_pos = grep { $file_user[$_] =~ m/$search$/ } 0..$#file_user;
+				
 			if ($#usrexist == 0){
 				$file = "$usrexist[0]/details.txt";
 				open my $p, "$file" or die "cannot open $file: $!";
@@ -55,7 +57,7 @@ sub main() {
 						my $currpassword = $line;						
 						if ($password eq $currpassword){
 							print userpage_header();
-							print user_page(); 
+							print personal_page($usr_pos[0]); 
 							print page_trailer(); 					
 						} else {				
 							print login_header();							
@@ -67,12 +69,22 @@ sub main() {
 				close $p;	
 			} else {					
 				print login_header();
-				print $#usrexist;
-				print "$password\n";
 				print inlogin_page();
 				print page_trailer(); 
 			}
 		}  
+	} elsif ($action =~ m/^Profile$/ ){		
+		if (length($username) > 0 && length($password) > 0){
+			my $search = $username;
+			$search =~ s/^\s+|\s+$//g;
+			my @usr_pos = grep { $file_user[$_] =~ m/$search$/ } 0..$#file_user;
+			print userpage_header();
+			print personal_page($usr_pos[0]);
+		} else {
+			print login_header();
+			print login_page();
+		}
+		print page_trailer(); 	
 	} elsif ($action =~ m/^register$/){
 		print login_header();
 		print registration_page();
@@ -80,6 +92,54 @@ sub main() {
 	} elsif ($action =~ m/^search$/){
 		print userpage_header();
 		print search_page();
+		print page_trailer();
+	} elsif ($action =~ m/Bleat/){
+		my $time = localtime;
+		my $lat = param('Lat') || '';
+		my $long = param('Long') || '';
+		my $bleat = param('bleat') || '';
+		print userpage_header();
+		@bleats_rev = reverse(@file_bleats);
+		if ($#bleats_rev < 0) {
+			$last_bleat = "$bleats_dir/204190000";
+ 		} else {
+			$last_bleat = $bleats_rev[0];
+			#print "<p>Prev: $last_bleat\n</p>";
+			$last_bleat =~ s/$bleats_dir\///;
+			$last_bleat += 10;
+			$tmp_bleatno = $last_bleat;
+			$last_bleat = $bleats_dir."/".$last_bleat;
+		}
+
+		#Make a new file for new bleat
+		open (my $fh, '>', $last_bleat) or die "Could not open file '$last_bleat' $!";
+		print $fh "username: $username\n";
+		print $fh "time: $time\n";
+		if (length($lat) > 0){
+			print $fh "latitude: $lat\n";
+		}
+		if (length($long) > 0){
+			print $fh "longitude: $long\n";
+		}
+		print $fh "bleat: $bleat\n";
+		close $fh;
+		
+		#Modify User's bleats file
+		my $users_bleats = "$users_dir/$username/bleats.txt";
+		open my $in,  '<',  $users_bleats      or die "Can't read old file: $!";
+		open my $out, '>', "$users_bleats.new" or die "Can't write new file: $!";		 
+		print $out "$tmp_bleatno\n"; # <--- HERE'S THE MAGIC		 
+		while( <$in> ) {
+			print $out $_;
+		}	 
+		close $out;
+		close $in;
+		unlink($users_bleats);
+		rename("$users_bleats.new", $users_bleats);
+		my $search = $username;
+		$search =~ s/^\s+|\s+$//g;
+		my @usr_pos = grep { $file_user[$_] =~ m/$search$/ } 0..$#file_user;
+		print personal_page($usr_pos[0]);
 		print page_trailer();
 	} else {
 		#John cena not a part of this website
@@ -191,8 +251,16 @@ sub user_page {
 			} elsif ($line =~ m/in\_reply\_to:/){
 				my $println = $line;
 				$println =~ s/in_reply_to: //;
+				open my $p, "$bleats_dir/$println" or die "can not open $bleats_dir/$println: $!";
+				foreach my $line (<$p>){
+					if ($line =~ m/username: /){
+						$reply_name = $line;
+						$reply_name =~ s/username: //;
+					}
+				}
+				close $p;
 				print '<div class="bubble-superscript">';
-				print "<p>In reply to $println</p>\n";
+				print "<p>In reply to $reply_name</p>\n";
 				print '</div>';
 			} else {
 				next;
@@ -217,6 +285,7 @@ sub user_page {
 		<input type="hidden" name="Username" value="$username">
 		<input type="hidden" name="Password" value="$password">
 		<input type="submit" name="act" value="Next User" class="bitter_button">
+		<input type="submit" name="act" value="Profile" class="bitter_button">
 		<input type="submit" name="act" value="Logout" class="bitter_button" align="right">
 	</form>
 	</footer>
@@ -256,28 +325,23 @@ eof
 }
 
 sub inlogin_page {
+	$username = param('Username') || '';
+	$password = param('Password') || '';
 	return <<eof
 
 	<form method="POST" action="">
 		<div class="login-block">
 		<h1>Incorrect Username/Password</h1>
-		<input type="text" name="Username" value="username"/>
-		<input type="password" name="Password" value="password"/>
+		<input type="text" name="Username" value="$username"/>
+		<input type="password" name="Password" value="$password"/>
 		<button type="submit" name="act" value="SubmitLogin">Submit</button>
 		<button type="submit" name="act" value="register">Register</button>
 		</div>
 	</form>
-	<footer class="elem">
-	<form method="POST" action="">
-		<input type="submit" name="act" value="Logout" class="bitter_button" align="right">
-	</form>
-	</footer>
-
 eof
 }
 
 sub registration_page {
-	print $username;
 	return <<eof
 
 	<form method="POST" action="">
@@ -297,135 +361,11 @@ eof
 }
 
 
-sub user_page {
-	#print "<p>$action</p>\n";
-	my $n = param('n') || 0;
-	$username = param('Username') || '';
-	$password = param('Password') || '';
-
-	my @users = sort(glob("$users_dir/*"));
-	my $user_to_show  = $users[$n % @users];
-	my $details_filename = "$user_to_show/details.txt";
-	my $image_filename = "$user_to_show/profile.jpg";
-	my @userdetails = do {
-		open my $p, "$details_filename" or die "can not open $details_filename: $!";
-		<$p>;		
-	};		
-	close $p;
-	
-	print '<div class="container">';
-	print '<nav class="elem">';
-	
-
-	#Profile Image
-	print '<div class="profile_image">';
-	print '<img class="Profile Pic" src='."$image_filename".' alt="No Image Found">';	
-	print '</div>';
-
-	#print "$password\n";
-	#Details
-	print '<div class="user_details">';
-	@userdetails = sort(@userdetails);
-	foreach my $user (@userdetails){
-		if ($user =~ m/email: |password:/){
-			next;
-		} elsif ($user =~ m/full_name/){
-			$user =~ s/full_name/Full Name/;
-		} elsif ($user =~ m/home_latitude/){
-			$user =~ s/home_latitude/Home Latitude/;
-		} elsif ($user =~ m/home_longitude/){
-			$user =~ s/home_longitude/Home Longitude/;
-		} elsif ($user =~ m/home_suburb/){
-			$user =~ s/home_suburb/Home Suburb/;	
-		} elsif ($user =~ m/listens/){
-			$user =~ s/listens://;
-			my @listensto = split/ /, $user;
-			foreach my $ele (@listensto){
-				$ele = '<p>'.$ele.'</p>'
-			}
-			$user = "Listens: ".join("\n", @listensto);
-		} elsif ($user =~ m/username/){
-			$user =~ s/username/Username/;
-			$usrname = $user;
-			$usrname =~ s/Username: //;
-			$usrname =~ s/^\s+|\s+$//g;
-		}
-		print "<p>$user<\p>\n";
-	}
-	my $next_user = $n + 1;
-	print '</div>';
-    print '</nav>';
-
-
-	#Bleats
-	print '<section class="elem">';
-	#print "$username\n";
-
-	print '<span class="first">';
-	print '@'."$usrname";
-	print '</span>';
-	#
-	#print "@reg_users\n";
-	my @userbleats = grep { /$usrname/ } @bleats;
-	@userbleats = reverse @userbleats;
-	foreach $ele (@userbleats){
-		#print '<div class="avatar">';
-		#print '<img src='."$image_filename".'>';
-	#	print '<div class="hover">';
-		print '<div class="bubble-container">';
-		print '<div class="bubble">';
-		my @bl = split"\n", $ele;
-		@bl = sort(@bl);
-		foreach my $line (@bl){
-			if ($line =~ m/^bleat: /){
-				my $println = $line;
-				$println =~ s/bleat: //;
-				print "<p>$println</p>\n";
-			} elsif ($line =~ m/time: /){
-				$println = $line;
-				$println =~ s/time: //;
-				$println = scalar localtime($println);
-				print '<div class="bubble-subscript">';
-				print "<p>Sent at $println</p>\n";
-				print '</div>';
-			} elsif ($line =~ m/in\_reply\_to:/){
-				my $println = $line;
-				$println =~ s/in_reply_to: //;
-				print '<div class="bubble-superscript">';
-				print "<p>In reply to $println</p>\n";
-				print '</div>';
-			} else {
-				next;
-			}
-		}
-		#print '</div>';
-	#	print '</div>';
-		print '</div>';
-		print '</div>';
-	}
-
-  	print '</section>';
-
-	
-	return <<eof
-	
-	</div>
-	<footer class="elem">
-	<p>
-	<form method="POST" action="">
-		<input type="hidden" name="n" value="$next_user">
-		<input type="hidden" name="Username" value="$username">
-		<input type="hidden" name="Password" value="$password">
-		<input type="submit" name="act" value="Next User" class="bitter_button">
-		<input type="submit" name="act" value="Logout" class="bitter_button" align="right">
-	</form>
-	</footer>
-eof
-}
-
 sub search_page {
 	my $search_string = param('Searchstring') || '';
 	my @users = sort(glob("$users_dir/*"));
+	$username = param('Username') || '';
+	$password = param('Password') || '';
 	
 	foreach my $ele (@users){
 		#print "<p>$ele</p>\n";
@@ -474,7 +414,6 @@ sub search_page {
 	}
 	print '</div>';
 	print '<div class="bleats-container">';
-	print 'asdg';
 	print '</div>';
 	print '</div>';
 	print '</div>';
@@ -483,6 +422,9 @@ sub search_page {
 
 	<footer class="elem">
 	<form method="POST" action="">
+		<input type="hidden" name="Username" value="$username">
+		<input type="hidden" name="Password" value="$password">
+		<input type="submit" name="act" value="Profile" class="bitter_button">
 		<input type="submit" name="act" value="Logout" class="bitter_button" align="right">
 	</form>
 	</footer>
@@ -490,8 +432,156 @@ eof
 }
 
 sub personal_page {
-	print 'sopmething';
+	my $n = $_[0];
+	$username = param('Username') || '';
+	$password = param('Password') || '';
+	@file_bleats = sort(glob("$bleats_dir/*"));
+	my @users = sort(glob("$users_dir/*"));
+	my $user_to_show  = $users[$n % @users];
+	my $details_filename = "$user_to_show/details.txt";
+	my $bleats_filename = "$user_to_show/bleats.txt";
+	my $image_filename = "$user_to_show/profile.jpg";
+	my @userdetails = do {
+		open my $p, "$details_filename" or die "can not open $details_filename: $!";
+		<$p>;		
+	};		
+	close $p;
+	
+	print '<div class="container">';
+	print '<nav class="elem">';
+	
+
+	#Profile Image
+	print '<div class="profile_image">';
+	print '<img class="Profile Pic" src='."$image_filename".' alt="No Image Found">';	
+	print '</div>';
+
+	#print "$password\n";
+	#Details
+	print '<div class="user_details">';
+	@userdetails = sort(@userdetails);
+	foreach my $user (@userdetails){
+		$lat = "";
+		$long = "";
+		if ($user =~ m/email: |password:/){
+			next;
+		} elsif ($user =~ m/full_name/){
+			$user =~ s/full_name/Full Name/;
+		} elsif ($user =~ m/home_latitude/){
+			$lat = $user;
+			$lat =~ s/home_latitude: //;
+			$user =~ s/home_latitude/Home Latitude/;
+		} elsif ($user =~ m/home_longitude/){
+			$long = $user;
+			$long =~ s/home_longitude: //;
+			$user =~ s/home_longitude/Home Longitude/;
+		} elsif ($user =~ m/home_suburb/){
+			$user =~ s/home_suburb/Home Suburb/;	
+		} elsif ($user =~ m/listens/){
+			$user =~ s/listens://;
+			my @listensto = split/ /, $user;
+			foreach my $ele (@listensto){
+				$ele = '<p>'.$ele.'</p>'
+			}
+			$user = "Listens: ".join("\n", @listensto);
+		} elsif ($user =~ m/username/){
+			$user =~ s/username/Username/;
+			$usrname = $user;
+			$usrname =~ s/Username: //;
+			$usrname =~ s/^\s+|\s+$//g;
+		}
+		print "<p>$user<\p>\n";
+	}
+	my $next_user = $n + 1;
+	print '</div>';
+    print '</nav>';
+
+
+	#Bleats
+	print '<section class="elem">';
+	#print "$username\n";
+
+	print '<span class="first">';
+	print '@'."$usrname";
+	print '<form method="POST">';
+  	print '<textarea id="bleats-box" name="bleat" maxlength="142" rows="5" cols="50">';
+	print '</textarea>';
+	print '<input type="hidden" name="Username" value='."$username".'>';
+	print '<input type="hidden" name="Password" value='."$password".'>';
+	
+	print '<input type="hidden" name="Time" value='."$currtime".'>';
+	print '<input type="hidden" name="Lat" value='."$lat".'>';
+	print '<input type="hidden" name="Long" value='."$long".'>';
+  	print '<input type="submit" name="act" value="Bleat">';
+	print '</form>';
+	print '</span>';
+	
+	open my $fb, "$bleats_filename" or die "can not open $bleats_filename: $!";
+	foreach my $ele (<$fb>){
+		print '<div class="bubble-container">';
+		print '<div class="bubble">';
+		$ele =~ s/^\s+|\s+$//g;
+		#print "<p>$ele</p>";
+		my @userbleats = grep { /$ele/ } @file_bleats;
+		#print "<p>@userbleats</p>";
+		open my $blets, "$userbleats[0]" or die "can not open $userbleats[0]: $!";
+		my @bleat_det = <$blets>;
+		close $blets;
+		#print "<p>new bleat: @bleat_det</p>";
+		@bleat_det = sort(@bleat_det);
+		foreach my $line (@bleat_det){
+			if ($line =~ m/^bleat: /){
+				my $println = $line;
+				$println =~ s/bleat: //;
+				print "<p>$println</p>\n";
+			} elsif ($line =~ m/time: /){
+				$println = $line;
+				$println =~ s/time: //;
+				$println = scalar localtime($println);
+				print '<div class="bubble-subscript">';
+				print "<p>Sent at $println</p>\n";
+				print '</div>';
+			} elsif ($line =~ m/in\_reply\_to:/){
+				my $println = $line;
+				$println =~ s/in_reply_to: //;
+				open my $p, "$bleats_dir/$println" or die "can not open $bleats_dir/$println: $!";
+				foreach my $line (<$p>){
+					if ($line =~ m/username: /){
+						$reply_name = $line;
+						$reply_name =~ s/username: //;
+					}
+				}
+				close $p;
+				print '<div class="bubble-superscript">';
+				print "<p>In reply to $reply_name</p>\n";
+				print '</div>';
+			} else {
+				next;
+			}
+		}		
+		print '</div>';
+		print '</div>';
+	}
+	close $fb;
+  	print '</section>';
+
+	
+	return <<eof
+	
+	</div>
+	<footer class="elem">
+	<p>
+	<form method="POST" action="">
+		<input type="hidden" name="Username" value="$username">
+		<input type="hidden" name="Password" value="$password">
+		<input type="submit" name="act" value="Users" class="bitter_button">
+		<input type="submit" name="act" value="Profile" class="bitter_button">
+		<input type="submit" name="act" value="Logout" class="bitter_button">
+	</form>
+	</footer>
+eof
 }
+
 
 sub page_header {
     return <<eof
@@ -507,6 +597,7 @@ Content-Type: text/html
 <div class="bitter_heading">
 <img src="pictures/Title.png" width="212" height="59" alt="Bitter">
 </div>
+
 eof
 }
 
@@ -578,12 +669,6 @@ sub load_data {
 	@file_bleats = sort(glob("$bleats_dir/*"));
 	$users_dir = "dataset-$dataset_size/users";	
 	@file_user = sort(glob("$users_dir/*"));
-	foreach my $file (@file_bleats){
-		open my $p, "$file" or die "cannot open $file: $!";
-		$bleat = join("\n", <$p>);
-		push (@bleats, $bleat);
-		close $p;
-	}
 	page_trailer();
 }
 
@@ -600,3 +685,4 @@ sub bsearch {
     }
     return;
 }
+
