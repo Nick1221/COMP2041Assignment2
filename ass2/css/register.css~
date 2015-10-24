@@ -1,3 +1,4 @@
+/* Copy of login.css WIP*/
 .registration-block {
     width: 500px;
     padding: 40px;
@@ -28,3 +29,24 @@
     padding: 0 20px 0 50px;
     outline: none;
 }
+
+.login-block input#username {
+    background: #fff url("pictures/username.png") 20px top no-repeat;
+    background-size: 16px 80px;
+}
+
+.login-block input#username:focus {
+    background: #fff url(../pictures/username.png) 20px bottom no-repeat;
+    background-size: 16px 80px;
+}
+
+.login-block input#password {
+    background: #fff url("file://../pictures/password.png") 20px top no-repeat;
+    background-size: 16px 80px;
+}
+
+.login-block input#password:focus {
+    background: #fff url("file://../pictures/password.png") 20px bottom no-repeat;
+    background-size: 16px 80px;
+}
+

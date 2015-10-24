@@ -8,3 +8,4 @@ Date	  Start    Stop	   Activity	Comments
 20/10	  8:45	   1:09    Coding   Login should be ok for now, working on registration 									page, search page and improvements on currently 									done tasks. Will be picking up speed on these 										things tomorrow.
 21/10     5:22	   7:46	   Coding	Login done, search done.
 22/10     9:30	   0:33	   Coding	Personal profile 50%, new bleats 50%. Fixed bleats
+24/10     20:00	   22:30   Coding	All of the above working, done up to searching bleats.
