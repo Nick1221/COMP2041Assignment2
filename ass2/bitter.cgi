@@ -3,7 +3,9 @@
 # written by andrewt@cse.unsw.edu.au September 2015
 # as a starting point for COMP2041/9041 assignment 2
 # http://cgi.cse.unsw.edu.au/~cs2041/assignments/bitter/
-
+#-------------------------------------------------------------------------------#
+#Editted by Nick Leung z5015489
+#-------------------------------------------------------------------------------#
 use CGI qw/:all/;
 use CGI::Carp qw/fatalsToBrowser warningsToBrowser/;
 
@@ -99,6 +101,9 @@ sub main() {
 		my $lat = param('Lat') || '';
 		my $long = param('Long') || '';
 		my $bleat = param('bleat') || '';
+		my $bleatperson = param('Reply_nm') || '';
+		my $replyno = param('In_reply') || '';
+
 		if (length($bleat) > 0){
 			print userpage_header();
 			@bleats_rev = reverse(@file_bleats);
@@ -122,6 +127,12 @@ sub main() {
 			if (length($long) > 0){
 				print $fh "longitude: $long\n";
 			}
+			if (length($replyno) > 0){
+				print $fh "in_reply_to: $replyno\n";
+			}
+			if (length($bleatperson) > 0){
+				$bleat = "\@$bleatperson ".$bleat;
+			}
 			print $fh "bleat: $bleat\n";
 			close $fh;
 	
@@ -129,10 +140,11 @@ sub main() {
 			my $users_bleats = "$users_dir/$username/bleats.txt";
 			open my $in,  '<',  $users_bleats      or die "Can't read old file: $!";
 			open my $out, '>', "$users_bleats.new" or die "Can't write new file: !";		 
-			print $out "$tmp_bleatno\n"; # <--- HERE'S THE MAGIC		 
+ 
 			while( <$in> ) {
 				print $out $_;
 			}
+			print $out "$tmp_bleatno\n"; # <--- HERE'S THE MAGIC		
 			my $bleat_new = join("\n", <$out>);
 			push (@bleats, $bleat_new);
 			close $out;
@@ -187,9 +199,62 @@ sub main() {
 		rename("$details_filename.new", $details_filename);
 		print user_added($deletionname);
 		print page_trailer();
-	} else {
-		#John cena not a part of this website
+	} elsif ($action =~ m/^Reply$/){
 		print page_header();
+		print reply_page();
+		print page_trailer();
+	} elsif ($action =~ m/^Edit$/){
+		#WIP
+		print userpage_header();
+		print edit_page();
+		print page_trailer();
+	} elsif ($action =~ m/^Register$/){
+		#Have not done registration email confirm
+		my $username_new = param('Username') || '';
+		my $password_new = param('Password') || '';
+		my $email = param('Email') || '';
+		my $full_name = param('Full Name') || '';
+		my $location = param('location') || '';
+		my $directory = "$users_dir/$username";
+		print login_header();
+		if ($username_new !~ m/[0-9a-zA-Z]/ || $password_new !~ m/[0-9a-zA-Z]/ || $email !~ m/.+@.+/){
+			print registration_page();
+			print page_trailer();
+		} else {
+			if (-d "$directory"){
+				print registration_page();
+				print page_trailer();
+			} else {							
+				#user info is correct. Create the directory
+				
+				unless (mkdir $directory) {
+					die "Unable to create $directory\n";
+				}
+				#bleats file created
+				my $details_filename = "$directory/bleats.txt";
+				open my $newfile, '>', "$details_filename" or die "can not open $details_filename: $!";
+				print $newfile "";
+				close $newfile;
+				#details file created
+				$details_filename = "$directory/details.txt";
+				open my $newfile, '>', "$details_filename" or die "can not open $details_filename: $!";
+				print $newfile "username: $username_new\n";
+				print $newfile "password: $password_new\n";
+				print $newfile "full_name: $full_name\n";
+				print $newfile "email: $email\n";
+				print $newfile "home_suburb: $location\n";
+				close $newfile;
+
+				print "<h2>Thank you for registering, click return to login!</h2>";
+				print '<form method="POST">';
+				print '<button type="submit" name="act" value="login">Return to Login!</button>';
+				print '</form>';
+				print page_trailer();
+			}
+		}
+	} else {
+		#John cena not a part of this website. Anything not authorized (No Username/password)
+		print page_header();		
 		print unauth_page();
 		print '</form>';
 		print page_trailer();
@@ -197,6 +262,11 @@ sub main() {
 
     
 }
+
+
+#-------------------------------------------------------------------------------#
+#Complex html pages
+#-------------------------------------------------------------------------------#
 
 
 #
@@ -332,6 +402,15 @@ sub user_page {
 				next;
 			}
 		}		
+		#Button to reply
+		print '<form method="POST">';
+		print '<input type="hidden" name="Username" value='."$username".'>';
+		print '<input type="hidden" name="Password" value='."$password".'>';
+		print '<input type="hidden" name="Bleatno" value='."$ele".'>';
+		print '<input type="hidden" name="Lat" value='."$lat".'>';
+		print '<input type="hidden" name="Long" value='."$long".'>';
+		print '<input type="submit" name="act" value="Reply">';
+		print '</form>';
 		print '</div>';
 		print '</div>';
 	}
@@ -357,121 +436,108 @@ eof
 }
 
 
-sub unauth_page {
-	#To have login, a brief intro to bitter.
-	return <<eof
-
-	<form method="POST" action="">
-		<input type="hidden" name="Username" value="$username">
-		<input type="hidden" name="Password" value="$password">
-		<button class="cool_btn1 teal" type="submit" name="act" value="login"/>
-		<h1 class='top'>Login</h1>
-		</button>
-		<button class="cool_btn2 teal" type="submit" name="act" value="register">
-		<h1 class='top'>Register</h1>
-		</button>
-	
-eof
-}
-
-sub login_page {
-	return <<eof
-
-	<form method="POST" action="">
-		<div class="login-block">
-		<h1>Login</h1>
-		<input type="text" name="Username" value="username"/>
-		<input type="password" name="Password" value="password"/>
-		<button type="submit" name="act" value="SubmitLogin">Submit</button>
-		</div>
-	</form>
-eof
-}
-
-sub inlogin_page {
+sub reply_page {
 	$username = param('Username') || '';
 	$password = param('Password') || '';
+	my $lat = param('Lat') || '';
+	my $long = param('Long') || '';
+	my $bleatno = param('Bleatno') || '';	
+	my $context = "$bleats_dir/$bleatno";
+	my @bleat = do {
+		open my $p, "$context" or die "can not open $context: $!";
+		<$p>;		
+	};	
+	print "<div class='results_container'>\n";
+	print "<h1>Reply!</h1>\n";
+	print "<div class='names-container'>\n";
+	print '<div class="bubble-search">';
+	@bleat = sort(@bleat);
+	foreach my $line (@bleat){
+		if ($line =~ m/^bleat: /){
+			my $println = $line;
+			$println =~ s/bleat: //;
+			print "<p>$println</p>\n";
+		} elsif ($line =~ m/time: /){
+			$println = $line;
+			$println =~ s/time: //;
+			$println = scalar localtime($println);
+			print '<div class="bubble-subscript">';
+			print "<p>Sent at $println</p>\n";
+			print '</div>';
+		} elsif ($line =~ m/in\_reply\_to:/){
+			my $println = $line;
+			$println =~ s/in_reply_to: //;
+			open my $p, "$bleats_dir/$println" or die "can not open $bleats_dir/$println: $!";
+			foreach my $line (<$p>){
+				if ($line =~ m/username: /){
+					$reply_name = $line;
+					$reply_name =~ s/username: //;
+				}
+			}
+			close $p;
+			print '<div class="bubble-superscript">';
+			print "<p>In reply to $reply_name</p>\n";
+			print '</div>';
+
+		} elsif ($line =~ m/username: /){
+			my $println = $line;
+			$println =~ s/username: //;
+			$reply_name = $println;
+		} else {
+			next;
+		}
+	}
+	print '</div>';
+	print '<div class="bubble-search">';
+	print "<h4>In reply to $reply_name</h4>";
+	print '<form method="POST">';	
+  	print '<textarea id="bleats-box" name="bleat" value="" maxlength="142" rows="5" cols="90">';
+	print '</textarea>';
+	print '<input type="hidden" name="Username" value='."$username".'>';
+	print '<input type="hidden" name="Password" value='."$password".'>';	
+	print '<input type="hidden" name="Time" value='."$currtime".'>';
+	print '<input type="hidden" name="Lat" value='."$lat".'>';
+	print '<input type="hidden" name="Long" value='."$long".'>';
+	print '<input type="hidden" name="In_reply" value='."$bleatno".'>';
+	print '<input type="hidden" name="Reply_nm" value='."$reply_name".'>';
+  	print '<button type="submit" name="act" value="Bleat">Reply</button>';
+	print '</form>';
+	print '</div>';
+	print '</div>';
+	print '</div>';
 	return <<eof
 
+	<footer class="elem">
 	<form method="POST" action="">
-		<div class="login-block">
-		<h1>Incorrect Username/Password</h1>
-		<input type="text" name="Username" value="$username"/>
-		<input type="password" name="Password" value="$password"/>
-		<button type="submit" name="act" value="SubmitLogin">Submit</button>
-		<button type="submit" name="act" value="register">Register</button>
-		</div>
+	<input type="hidden" name="Username" value="$username">;
+	<input type="hidden" name="Password" value="$password">;
+	<input type="submit" name="act" value="Profile" class="bitter_button">
+	<input type="submit" name="act" value="Logout" class="bitter_button" align="right">
 	</form>
+	</footer>
 eof
 }
 
-sub registration_page {
-	return <<eof
+sub edit_page {
+	$username = param('Username') || '';
+	$password = param('Password') || '';
+	my $user_to_show = "$users_dir/$username";
+	my $image_filename = "$user_to_show/profile.jpg";
 
-	<form method="POST" action="">
-		<div class="login-block">
-		<p>Username</p>
-		<input type="text" name="Username" value=""/>
-		<p>Password</p>
-		<input type="password" name="Password" value=""/>
-		<input type="text" name="Email" value=""/>
-		<input type="text" name="Full Name" value=""/>
-		<button type="submit" name="act" value="registerinfo">Register!</button>
-		<button type="reset">Reset</button>
-		<button type="submit" name="act" value="return">Return</button>
-		</div>
-	</form>
-eof
-}
-
-sub success_bleat {
-	return <<eof
-
-	<form method="POST" action="">
-		<h1>Bleat Sent! Click the button below to return to profile.</h1>
-		<input type="hidden" name="Username" value="$username">
-		<input type="hidden" name="Password" value="$password">
-		<button type="submit" name="act" value="Profile">Return to Profile</button>
-	</form>
-eof
-}
-
-sub user_deleted {
-	my $userdeleted = $_[0] || '';
-	return <<eof
-
-	<form method="POST" action="">
-		<h1>$userdeleted has been deleted from the listen list! Click the button below to return to profile.</h1>
-		<input type="hidden" name="Username" value="$username">
-		<input type="hidden" name="Password" value="$password">
-		<button type="submit" name="act" value="Profile">Return to Profile</button>
-	</form>
-eof
-}
-
-sub user_added {
-	my $userdeleted = $_[0] || '';
-	return <<eof
-
-	<form method="POST" action="">
-		<h1>$userdeleted has been added to the listen list! Click the button below to return to profile.</h1>
-		<input type="hidden" name="Username" value="$username">
-		<input type="hidden" name="Password" value="$password">
-		<button type="submit" name="act" value="Profile">Return to Profile</button>
-	</form>
-eof
-}
-
-sub failure_bleat {
-	return <<eof
-
-	<form method="POST" action="">
-		<h1>Bleat invalid!(Invalid characters or not enough characters) Click the button below to return to profile.</h1>
-		<input type="hidden" name="Username" value="$username">
-		<input type="hidden" name="Password" value="$password">
-		<button type="submit" name="act" value="Profile">Return to Profile</button>
-	</form>
-eof
+	print "<div class='results_container'>\n";
+	print "<h1>Edit page for $username</h1>\n";
+	print "<div class='names-container'>\n";
+	print '<div class="bubble">';
+	print '<div class="profile_image_edit">';
+	print '<img class="Profile Pic" src='."$image_filename".' alt="No Image Found">';
+	print '<form>';
+	print '<input type="file" name="pic" accept="image/*">';
+	print '<button type="submit" name="act" value="upload">Upload Image</button>';
+	print '</form>';
+	print '</div>';
+	print '</div>';
+	print '</div>';
+	print '</div>';
 }
 
 
@@ -539,7 +605,7 @@ sub search_page {
 					$println =~ s/bleat: //;
 					print "<p>$println</p>\n";
 				} elsif ($line =~ m/time: /){
-					$println = $line;
+					my $println = $line;
 					$println =~ s/time: //;
 					$println = scalar localtime($println);
 					print '<div class="bubble-subscript">';
@@ -559,10 +625,23 @@ sub search_page {
 					print '<div class="bubble-superscript">';
 					print "<p>In reply to $reply_name</p>\n";
 					print '</div>';
+				} elsif ($line =~ m/dataset/){
+					my $reg = "$user_dir/bleats/";
+					$line =~ s/.+bleats\///;
+					$bleat_no = $line;
 				} else {
 					next;
 				}
 			}
+			#Button to reply
+			print '<form method="POST">';
+			print '<input type="hidden" name="Username" value='."$username".'>';
+			print '<input type="hidden" name="Password" value='."$password".'>';
+			print '<input type="hidden" name="Bleatno" value='."$bleat_no".'>';
+			print '<input type="hidden" name="Lat" value='."$lat".'>';
+			print '<input type="hidden" name="Long" value='."$long".'>';
+			print '<input type="submit" name="act" value="Reply">';
+			print '</form>';
 			print '</div>';
 		}
 	}
@@ -609,17 +688,25 @@ sub personal_page {
 	print '<div class="profile_image">';
 	print '<img class="Profile Pic" src='."$image_filename".' alt="No Image Found">';	
 	print '</div>';
+	
 
-	#print "$password\n";
+	
 	#Details
 	print '<div class="user_details">';
 	print '<div style="clear: both;"></div>';
+	print '<form method="POST">';
+	print '<input type="hidden" name="Username" value='."$username".'>';
+	print '<input type="hidden" name="Password" value='."$password".'>';
+	print '<button class="button_edit" style="submit" name="act" value="Edit">Edit information</button>';
+	print '</form>';
 	@userdetails = sort(@userdetails);
 	foreach my $user (@userdetails){
 		$lat = "";
 		$long = "";
 		if ($user =~ m/email: |password:/){
 			next;
+		} elsif ($user =~ m/bio/){
+			
 		} elsif ($user =~ m/full_name/){
 			$user =~ s/full_name/Full Name/;
 		} elsif ($user =~ m/home_latitude/){
@@ -682,7 +769,6 @@ sub personal_page {
 		close $fp;
 
 		@bleats_by_others = reverse(@bleats_by_others);		
-
 		foreach my $ele (@bleats_by_others){	
 			print '<div class="bubble-recent">';
 			$ele =~ s/^\s+|\s+$//g;
@@ -697,7 +783,7 @@ sub personal_page {
 					$println =~ s/bleat: //;
 					print "<p>$println</p>\n";
 				} elsif ($line =~ m/time: /){
-					$println = $line;
+					my $println = $line;
 					$println =~ s/time: //;
 					$println = scalar localtime($println);
 					print '<div class="bubble-subscript">';
@@ -721,6 +807,15 @@ sub personal_page {
 					next;
 				}
 			}
+			#Button to reply
+			print '<form method="POST">';
+			print '<input type="hidden" name="Username" value='."$username".'>';
+			print '<input type="hidden" name="Password" value='."$password".'>';
+			print '<input type="hidden" name="Bleatno" value='."$ele".'>';
+			print '<input type="hidden" name="Lat" value='."$lat".'>';
+			print '<input type="hidden" name="Long" value='."$long".'>';
+			print '<input type="submit" name="act" value="Reply">';
+			print '</form>';
 			print '</div>';
 		}		
 		
@@ -793,7 +888,16 @@ sub personal_page {
 			} else {
 				next;
 			}
-		}		
+		}	
+		#Button to reply
+		print '<form method="POST">';
+		print '<input type="hidden" name="Username" value='."$username".'>';
+		print '<input type="hidden" name="Password" value='."$password".'>';
+		print '<input type="hidden" name="Bleatno" value='."$ele".'>';
+		print '<input type="hidden" name="Lat" value='."$lat".'>';
+		print '<input type="hidden" name="Long" value='."$long".'>';
+		print '<input type="submit" name="act" value="Reply">';
+		print '</form>';	
 		print '</div>';
 		
 	}	
@@ -817,7 +921,134 @@ sub personal_page {
 eof
 }
 
+#-------------------------------------------------------------------------------#
+#Simple html pages(Gateways)
+#-------------------------------------------------------------------------------#
+sub unauth_page {
+	#To have login, a brief intro to bitter.
+	return <<eof
 
+	<form method="POST" action="">
+		<input type="hidden" name="Username" value="$username">
+		<input type="hidden" name="Password" value="$password">
+		<button class="cool_btn1 teal" type="submit" name="act" value="login"/>
+		<h1 class='top'>Login</h1>
+		</button>
+		<button class="cool_btn2 teal" type="submit" name="act" value="register">
+		<h1 class='top'>Register</h1>
+		</button>
+	
+eof
+}
+
+sub login_page {
+	return <<eof
+
+	<form method="POST" action="">
+		<div class="login-block">
+		<h1>Login</h1>
+		<input type="text" name="Username" value="username" id="username"/>
+		<input type="password" name="Password" value="password" id="password"/>
+		<button type="submit" name="act" value="SubmitLogin">Submit</button>
+		</div>
+	</form>
+eof
+}
+
+sub inlogin_page {
+	$username = param('Username') || '';
+	$password = param('Password') || '';
+	return <<eof
+
+	<form method="POST" action="">
+		<div class="login-block">
+		<h1>Incorrect Username/Password</h1>
+		<input type="text" name="Username" value="$username" id="username"/>
+		<input type="password" name="Password" value="$password" id="password"/>
+		<button type="submit" name="act" value="SubmitLogin">Submit</button>
+		<button type="submit" name="act" value="register">Register</button>
+		</div>
+	</form>
+eof
+}
+
+sub registration_page {
+	return <<eof
+
+	<form method="POST" action="">
+		<div class="login-block">
+		<p>Username: </p>
+		<input type="text" name="Username" value=""/>
+		<p>Password: </p>
+		<input type="password" name="Password" value=""/>
+		<p>Email: </p>
+		<input type="text" name="Email" value=""/>
+		<p>Home Location: </p>
+		<input type="text" name="location" value=""/>
+		<p>Full Name: </p>
+		<input type="text" name="Full Name" value=""/>
+		<button type="submit" name="act" value="Register">Register!</button>
+		<button type="reset">Reset</button>
+		<button type="submit" name="act" value="return">Return</button>
+		</div>
+	</form>
+eof
+}
+
+sub success_bleat {
+	return <<eof
+
+	<form method="POST" action="">
+		<h1>Bleat Sent! Click the button below to return to profile.</h1>
+		<input type="hidden" name="Username" value="$username">
+		<input type="hidden" name="Password" value="$password">
+		<button type="submit" name="act" value="Profile">Return to Profile</button>
+	</form>
+eof
+}
+
+sub user_deleted {
+	my $userdeleted = $_[0] || '';
+	return <<eof
+
+	<form method="POST" action="">
+		<h1>$userdeleted has been deleted from the listen list! Click the button below to return to profile.</h1>
+		<input type="hidden" name="Username" value="$username">
+		<input type="hidden" name="Password" value="$password">
+		<button type="submit" name="act" value="Profile">Return to Profile</button>
+	</form>
+eof
+}
+
+sub user_added {
+	my $userdeleted = $_[0] || '';
+	return <<eof
+
+	<form method="POST" action="">
+		<h1>$userdeleted has been added to the listen list! Click the button below to return to profile.</h1>
+		<input type="hidden" name="Username" value="$username">
+		<input type="hidden" name="Password" value="$password">
+		<button type="submit" name="act" value="Profile">Return to Profile</button>
+	</form>
+eof
+}
+
+sub failure_bleat {
+	return <<eof
+
+	<form method="POST" action="">
+		<h1>Bleat invalid!(Invalid characters or not enough characters) Click the button below to return to profile.</h1>
+		<input type="hidden" name="Username" value="$username">
+		<input type="hidden" name="Password" value="$password">
+		<button type="submit" name="act" value="Profile">Return to Profile</button>
+	</form>
+eof
+}
+
+
+#-------------------------------------------------------------------------------#
+#Headers
+#-------------------------------------------------------------------------------#
 sub page_header {
     return <<eof
 Content-Type: text/html
@@ -894,6 +1125,10 @@ sub page_trailer {
     return $html;
 }
 
+
+#-------------------------------------------------------------------------------#
+#Loads content
+#-------------------------------------------------------------------------------#
 sub load_data {
 	print "Content-type: text/html";
 	print "<!DOCTYPE html>";
@@ -910,23 +1145,9 @@ sub load_data {
 	foreach my $file (@file_bleats){
 		open my $p, "$file" or die "cannot open $file: $!";
 		$bleat = join("\n", <$p>);
+		$bleat = "$file\n".$bleat;
 		push (@bleats, $bleat);
 		close $p;
 	}
 	page_trailer();
 }
-
-sub bsearch {
-    my ($array, $word) = @_;
-    my $low = 0;
-    my $high = @$array - 1;
-
-    while ( $low <= $high ) {
-        my $try = int( ($low+$high) / 2 );
-        $low  = $try+1, next if $array->[$try] lt $word;
-        $high = $try-1, next if $array->[$try] gt $word;
-        return $try;
-    }
-    return;
-}
-

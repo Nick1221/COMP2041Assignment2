@@ -8,6 +8,12 @@
  * You will probably want to add  CSS to this file too
  */
 
+body {
+    background: url('http://hdwallpaperslovely.com/wp-content/gallery/light-blue-wallpapers/429155.jpg') no-repeat fixed center center;
+    background-size: cover;
+
+}
+
 .bitter_heading {
     background-color:#FFCCCC;
     color:white;
@@ -21,7 +27,25 @@
     border: 25px solid gray;
 }
 
+.profile_image_edit {
+	max-width: 250px;
+	max-height: 250px;
+    border: 25px solid gray;
+	margin: 0 auto;
+}
+
 .user_details {
+    background-color: #00FFFF;
+    color: #204142;
+    border:thin solid #204142;
+    border-radius: 1em;
+    padding-left: 0.42em;
+    max-width: 300px;
+	height: 1200px;
+	overflow: auto;
+}
+
+.user_message {
     background-color: #00FFFF;
     color: #204142;
     border:thin solid #204142;
@@ -44,6 +68,7 @@
     border:2px solid #207cca;
 	background-color:#207cca;
     color:#fafafa;
+
 }
 
 .results_container {
@@ -67,7 +92,11 @@
 	margin: 0 auto;
 }
 
-
+.button_edit {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
 
 /*Source: http://learnlayout.com/position-example.html*/
 .container {
@@ -82,15 +111,18 @@ section {
 	background-color:#FFCCCC;
 	border-style: solid;    
     margin-left: 300px;
+	height: 1500px;
+	overflow: auto;
 }
 footer.elem {
     position: fixed;
     bottom: 0;
     left: 0;
     height: 90px;
-    background-color: white;
+    background-color: #FFCCCC;
     width: 100%;
     margin: 0;
+	opacity: 0.8;
     z-index: 1;
 }
 body {
@@ -137,6 +169,7 @@ body {
   	vertical-align: top;
   	display: inline-block; 
 	margin: auto;
+
 }
 
 .bubble-recent {
