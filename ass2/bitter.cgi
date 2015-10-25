@@ -364,6 +364,8 @@ sub user_page {
 	print '</span>';
 	open my $fb, "$bleats_filename" or die "can not open $bleats_filename: $!";
 	foreach my $ele (<$fb>){
+		$lat = 0;
+		$long = 0;
 		print '<div class="bubble-container">';
 		print '<div class="bubble">';
 		$ele =~ s/^\s+|\s+$//g;
