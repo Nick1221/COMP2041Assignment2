@@ -9,3 +9,4 @@ Date	  Start    Stop	   Activity	Comments
 21/10     5:22	   7:46	   Coding	Login done, search done.
 22/10     9:30	   0:33	   Coding	Personal profile 50%, new bleats 50%. Fixed bleats
 24/10     20:00	   22:30   Coding	All of the above working, done up to searching bleats.
+25/10     20:00	   03:20   Coding	All of subset 0-2 done. subset 3 register doen without email 										confirm. Edit 1/2 done.
