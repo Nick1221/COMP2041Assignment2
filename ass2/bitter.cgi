@@ -165,15 +165,15 @@ sub main() {
 		my $details_filename = "$user_to_show/$username/details.txt";
 		#print "$details_filename, $deletionname, $username\n";
 		open my $oldfile, "$details_filename" or die "can not open $details_filename: $!";
-		open my $newfile, '>', "$details_filename.new" or die "can not open $details_filename: $!";
+		open my $newfile_unlisten, '>', "$details_filename.new" or die "can not open $details_filename: $!";
 		foreach my $line (<$oldfile>){
 			if ($line =~ m/listens/){
 				$line =~ s/$deletionname //;
 			}
-			print $newfile $line;			
+			print $newfile_unlisten $line;			
 		}
 		close $oldfile;
-		close $newfile;
+		close $newfile_unlisten;
 		unlink($details_filename);
 		rename("$details_filename.new", $details_filename);
 		print user_deleted($deletionname);
@@ -232,18 +232,18 @@ sub main() {
 				}
 				#bleats file created
 				my $details_filename = "$directory/bleats.txt";
-				open my $newfile, '>', "$details_filename" or die "can not open $details_filename: $!";
-				print $newfile "";
-				close $newfile;
+				open my $newfile_user, '>', "$details_filename" or die "can not open $details_filename: $!";
+				print $newfile_user "";
+				close $newfile_user;
 				#details file created
 				$details_filename = "$directory/details.txt";
-				open my $newfile, '>', "$details_filename" or die "can not open $details_filename: $!";
-				print $newfile "username: $username_new\n";
-				print $newfile "password: $password_new\n";
-				print $newfile "full_name: $full_name\n";
-				print $newfile "email: $email\n";
-				print $newfile "home_suburb: $location\n";
-				close $newfile;
+				open my $newfile_details, '>', "$details_filename" or die "can not open $details_filename: $!";
+				print $newfile_details "username: $username_new\n";
+				print $newfile_details "password: $password_new\n";
+				print $newfile_details "full_name: $full_name\n";
+				print $newfile_details "email: $email\n";
+				print $newfile_details "home_suburb: $location\n";
+				close $newfile_details;
 
 				print "<h2>Thank you for registering, click return to login!</h2>";
 				print '<form method="POST">';
@@ -349,7 +349,7 @@ sub user_page {
 			$usrname =~ s/Username: //;
 			$usrname =~ s/^\s+|\s+$//g;
 		}
-		print "<p>$user<\p>\n";
+		print "<p>$user</p>\n";
 	}
 	my $next_user = $n + 1;
 	print '</div>';
@@ -437,7 +437,7 @@ sub user_page {
 eof
 }
 
-
+#Page for replying tweet
 sub reply_page {
 	$username = param('Username') || '';
 	$password = param('Password') || '';
@@ -520,6 +520,7 @@ sub reply_page {
 eof
 }
 
+#Editting user's information. WIP
 sub edit_page {
 	$username = param('Username') || '';
 	$password = param('Password') || '';
@@ -542,7 +543,7 @@ sub edit_page {
 	print '</div>';
 }
 
-
+#Search result page
 sub search_page {
 	my $search_string = param('Searchstring') || '';
 	my @users = sort(glob("$users_dir/*"));
@@ -590,7 +591,7 @@ sub search_page {
 			print '<input type="hidden" name="act" value="Users">';
 			print '<input type="hidden" name="Username" value='."$username".'>';
 			print '<input type="hidden" name="Password" value='."$password".'>';
-			print '<button type="submit" name="n" value='."$ele".'>'."@users[$ele]"."</button>";
+			print '<button type="submit" name="n" value='."$ele".'>'."$users[$ele]"."</button>";
 			print '</form>';
 		}
 	}
@@ -628,7 +629,6 @@ sub search_page {
 					print "<p>In reply to $reply_name</p>\n";
 					print '</div>';
 				} elsif ($line =~ m/dataset/){
-					my $reg = "$user_dir/bleats/";
 					$line =~ s/.+bleats\///;
 					$bleat_no = $line;
 				} else {
@@ -665,6 +665,7 @@ sub search_page {
 eof
 }
 
+#Profile page essentially
 sub personal_page {
 	my $n = $_[0];
 	$username = param('Username') || '';
@@ -740,7 +741,7 @@ sub personal_page {
 			$usrname =~ s/Username: //;
 			$usrname =~ s/^\s+|\s+$//g;
 		}
-		print "<p>$user<\p>\n";
+		print "<p>$user</p>\n";
 	}
 	my $next_user = $n + 1;
 	print '</div>';
